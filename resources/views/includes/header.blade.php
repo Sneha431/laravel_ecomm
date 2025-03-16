@@ -8,11 +8,18 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <a class="nav-link active" aria-current="page" href="{{route('index')}}">Home</a>
         </li>
+        <?php
+        $cart = session()->get('cartcount', 0);
+
+        ?>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
+          <a class="nav-link" href="{{ route('cart.show') }}">
+            Cart({{ !empty($cart) ? $cart : 0 }})
+          </a>
         </li>
+
         <!--The auth Blade directive checks if the user is authenticated
            (i.e., logged in).
 If the user is authenticated, the content inside the auth block will be rendered.
