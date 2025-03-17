@@ -6,6 +6,12 @@
 
 
     <div class="row">
+      @if(session()->has("success"))
+      <div class="alert alert-success">{{session("success")}}</div>
+      @endif
+      @if(session("error"))
+      <div class="alert alert-danger">{{session("error")}}</div>
+      @endif
       @foreach($cartItems as $cartItem)
       <div class="col-12">
         <div class="card mb-3" style="max-width: 540px;">
@@ -17,7 +23,7 @@
               <div class="card-body">
                 <h5 class="card-title"><a href="{{route('product.details',$cartItem->slug)}}">{{$cartItem->title}}</a>
                 </h5>
-                <p class="card-text">Price : ${{$cartItem->price}} </p>
+                <p class="card-text">Price : ${{$cartItem->price}} | Quantity : {{$cartItem->quantity}} </p>
               </div>
             </div>
           </div>
@@ -27,8 +33,14 @@
 
 
       @endforeach
-    </div>
 
+    </div>
+    <div>
+      {{$cartItems->links()}}
+    </div>
+    <div>
+      <a href="{{route('checkout.show')}}" class="btn btn-success">Proceed to Checkout</a>
+    </div>
   </section>
 </main>
 @endsection

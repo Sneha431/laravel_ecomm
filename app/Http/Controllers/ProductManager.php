@@ -29,7 +29,15 @@ class ProductManager extends Controller
         $cart->product_id = $id;
 
         if ($cart->save()) {
+            $cartItems = DB::table("cart")
+                ->join("products", "cart.product_id", "=", "products.id")
+                ->select("product_id", DB::raw("count(*) as quantity"), "products.title", "products.slug", "products.image", "products.price")
+                ->where("cart.user_id", auth()->user()->id)
+                ->groupBy("cart.product_id", "products.title", "products.price", "products.slug", "products.image")
 
+                ->paginate(5);
+
+            session()->put('cartcount', count($cartItems));
 
             return redirect()->back()->with("success", "Product added to the cart");
         }
@@ -40,7 +48,10 @@ class ProductManager extends Controller
         $cartItems = DB::table("cart")
             ->join("products", "cart.product_id", "=", "products.id")
             ->select("product_id", DB::raw("count(*) as quantity"), "products.title", "products.slug", "products.image", "products.price")
-            ->where("cart.user_id", auth()->user()->id)->groupBy("cart.product_id", "products.title", "products.price")->get();
+            ->where("cart.user_id", auth()->user()->id)
+            ->groupBy("cart.product_id", "products.title", "products.price", "products.slug", "products.image")
+
+            ->paginate(5);
 
         session()->put('cartcount', count($cartItems));
 

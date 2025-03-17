@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //Blueprint $table parameter gives you access to various methods that define the columns of the table.
         Schema::create("products", function (Blueprint $table) {
             $table->id();
             $table->string('title');
