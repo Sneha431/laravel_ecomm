@@ -16,7 +16,9 @@
     <h1>{{$product->title}}</h1>
     <p>{{$product->price}}</p>
     <p>{{$product->description}}</p>
+    @auth
     <a href="{{route('cart.add',$product->id)}}" class="btn btn-success">Add to cart</a>
+    @endauth
 
   </section>
 </main>

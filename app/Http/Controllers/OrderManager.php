@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Orders;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class OrderManager extends Controller
 {
@@ -96,5 +98,80 @@ class OrderManager extends Controller
     {
         // return redirect(route("index"))->with("error", "Payment failed");
         return "Error" . $order_id;
+    }
+    function webhookstripe(Request $request)
+    {
+        $endpoint_secret = config("app.APP_STRIPE_WEBHOOK_SECRET");
+        $payload = $request->getContent();
+        $sig_header = $request->header('Stripe-Signature');
+        $event = null;
+        try {
+            $event = \Stripe\Webhook::constructEvent(
+                $payload,
+                $sig_header,
+                $endpoint_secret
+            );
+        } catch (\UnexpectedValueException $e) {
+            return response()->json(['error' => 'Invalid payload'], 400);
+        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            return response()->json(['error' => 'Invalid signature'], 400);
+        }
+        // Handle the event 
+        if ($event->type == 'checkout.session.completed') {
+            $session = $event->data->object;
+            $orderId = $session->metadata->order_id;
+            $paymentId = $session->payment_intent;
+            $order = Orders::find($orderId);
+            if ($order) {
+                $order->payment_id = $paymentId;
+                $order->status = "payment_completed";
+                $order->save();
+            }
+        }
+
+        return response()->json(['status' => 'success'], 200);
+    }
+    function orderHistory()
+    {
+        // $orders = Orders::where("user_id", auth()->user()->id)->get();
+
+        // $orders = $orders->map(function ($order) {
+        //     $productIds = json_decode($order->product_id, true);
+        //     $quantities = json_decode($order->quantity, true);
+        //     $products = Products::whereIn("id", $productIds)->get();
+        //     $order->products_details = $products->map(function ($product)
+        //     use ($productIds, $quantities) {
+        //         $index = array_search($product->id, $productIds);
+        //         return [
+        //             'name' => $product->title,
+        //             'quantity' => $quantities[$index] ?? 0,
+        //             'price' => $product->price
+        //         ];
+        //     });
+        //     return $order;
+        // });
+        // return $orders;
+
+        $orders = Orders::where("user_id", auth()->user()->id)->orderBy('id', 'desc')->paginate(5);
+
+        $orders->getCollection()->map(function ($order) {
+            $productIds = json_decode($order->product_id, true);
+            $quantities = json_decode($order->quantity, true);
+            $products = Products::whereIn("id", $productIds)->get();
+            $order->products_details = $products->map(function ($product)
+            use ($productIds, $quantities) {
+                $index = array_search($product->id, $productIds);
+                return [
+                    'name' => $product->title,
+                    'quantity' => $quantities[$index] ?? 0,
+                    'price' => $product->price,
+                    'slug' => $product->slug,
+                    'image' => $product->image
+                ];
+            });
+            return $order;
+        });
+        return view("history", compact("orders"));
+        // return $orders;
     }
 }

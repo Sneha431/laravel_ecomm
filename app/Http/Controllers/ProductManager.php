@@ -47,7 +47,17 @@ class ProductManager extends Controller
     {
         $cartItems = DB::table("cart")
             ->join("products", "cart.product_id", "=", "products.id")
-            ->select("product_id", DB::raw("count(*) as quantity"), "products.title", "products.slug", "products.image", "products.price")
+            ->select(
+                "product_id",
+                DB::raw("count(*) as quantity"),
+                DB::raw("MIN(cart.id) as cart_id"),
+                "products.title",
+                "products.slug",
+                "products.image",
+                "products.price"
+
+            )
+
             ->where("cart.user_id", auth()->user()->id)
             ->groupBy("cart.product_id", "products.title", "products.price", "products.slug", "products.image")
 
@@ -56,5 +66,11 @@ class ProductManager extends Controller
         session()->put('cartcount', count($cartItems));
 
         return view('cart', compact("cartItems"));
+    }
+    function deleteCart($id)
+    {
+        Cart::where('user_id', auth()->user()->id)->where('id', $id)->delete();
+        session()->put('cartcount', session('cartcount') - 1);
+        return redirect()->back()->with("success", "Product removed from the cart");
     }
 }

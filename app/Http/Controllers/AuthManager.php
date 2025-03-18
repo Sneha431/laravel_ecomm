@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class AuthManager extends Controller
 {
@@ -50,6 +52,7 @@ class AuthManager extends Controller
     function logout()
     {
         Auth::logout();
+        Session::flush();
         //This is a method from Laravel's Auth facade that logs out the currently authenticated user.
         // When called, it will: Clear the user's session data. Invalidate the session token 
         //(if you're using token-based authentication).

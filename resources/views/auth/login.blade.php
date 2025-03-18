@@ -53,9 +53,9 @@ body {
         Remember me
       </label>
     </div>
-    @if(session()->has("success"))
+    <!-- @if(session()->has("success"))
     <div class="alert alert-success">{{session("success")}}</div>
-    @endif
+    @endif -->
     @if(session("error"))
     <div class="alert alert-danger">{{session("error")}}</div>
     @endif

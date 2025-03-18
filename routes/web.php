@@ -19,8 +19,10 @@ Route::get("/product/{slug}", [ProductManager::class, "details"])->name("product
 Route::middleware(["auth"])->group(function () {
   Route::get("/cart/{id}", [ProductManager::class, "addToCart"])->name("cart.add");
   Route::get("/cart", [ProductManager::class, "showCart"])->name("cart.show");
+  Route::get("/cart/delete/{id}", [ProductManager::class, "deleteCart"])->name("cart.delete");
   Route::get("/checkout", [OrderManager::class, "showCheckout"])->name("checkout.show");
   Route::post("/orders", [OrderManager::class, "checkoutPost"])->name("checkout.post");
   Route::get("/payment/success/{order_id}", [OrderManager::class, "paymentSuccess"])->name("payment.success");
   Route::get("/payment/error/{order_id}", [OrderManager::class, "paymentError"])->name("payment.error");
+  Route::get("/order/history", [OrderManager::class, "orderHistory"])->name("order.history");
 });

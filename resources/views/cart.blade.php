@@ -24,23 +24,26 @@
                 <h5 class="card-title"><a href="{{route('product.details',$cartItem->slug)}}">{{$cartItem->title}}</a>
                 </h5>
                 <p class="card-text">Price : ${{$cartItem->price}} | Quantity : {{$cartItem->quantity}} </p>
+                <div class="d-flex">
+                  <a href="{{route('cart.delete',$cartItem->cart_id)}}" class="btn btn-danger">Remove</a>
+
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
+
+        @endforeach
+
       </div>
-
-
-      @endforeach
-
-    </div>
-    <div>
-      {{$cartItems->links()}}
-    </div>
-    <div>
-      <a href="{{route('checkout.show')}}" class="btn btn-success">Proceed to Checkout</a>
-    </div>
+      <div>
+        {{$cartItems->links()}}
+      </div>
+      <div>
+        <a href="{{route('checkout.show')}}" class="btn btn-success">Proceed to Checkout</a>
+      </div>
   </section>
 </main>
 @endsection

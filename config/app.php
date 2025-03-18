@@ -15,6 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
     'APP_STRIPE_SECRET_KEY' => env('APP_STRIPE_SECRET_KEY'),
+    'APP_STRIPE_WEBHOOK_SECRET' => env('APP_STRIPE_WEBHOOK_SECRET'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
